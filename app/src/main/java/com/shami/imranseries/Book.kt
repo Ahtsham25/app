@@ -6,6 +6,6 @@ data class Book(
     val number: String,
     val embedUrl: String,
     val downloadUrl: String,
-    val detailsUrl: String
+    val detailsUrl: String,
+    val readUrl: String
 )
-
