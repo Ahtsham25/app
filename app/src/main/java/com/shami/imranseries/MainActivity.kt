@@ -61,20 +61,20 @@ class MainActivity : AppCompatActivity() {
             .setTitle(book.title)
             .setItems(arrayOf(getString(R.string.read_online), getString(R.string.download))) { _, which ->
                 when (which) {
-                    0 -> openInBrowser(book.detailsUrl.ifEmpty { book.embedUrl })
-                    1 -> openInBrowser(book.downloadUrl)
+                    0 -> ReaderActivity.start(this, book.title, book.readUrl)
+                    1 -> downloadPdf(book)
                 }
             }
             .setNegativeButton(getString(R.string.cancel), null)
             .show()
     }
 
-    private fun openInBrowser(url: String) {
+    private fun downloadPdf(book: Book) {
         try {
-            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(book.downloadUrl))
             startActivity(intent)
         } catch (e: Exception) {
-            // agar koi masla ho to chup chaap ignore, app crash nahi hogi
+            // ignore
         }
     }
 }
