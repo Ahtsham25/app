@@ -54,7 +54,8 @@ object BooksRepository {
                     number = o.getString("number"),
                     embedUrl = o.getString("embed_url"),
                     downloadUrl = o.getString("download_url"),
-                    detailsUrl = o.optString("details_url", "")
+                    detailsUrl = o.optString("details_url", ""),
+                    readUrl = o.optString("read_url", "")
                 )
             )
         }
