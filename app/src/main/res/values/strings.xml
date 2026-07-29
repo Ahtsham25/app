@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Imran Series Library</string>
+    <string name="reading">Reading</string>
+    <string name="read_online">Online Read</string>
+    <string name="download">Download</string>
+    <string name="cancel">Cancel</string>
+    <string name="downloading">Downloading…</string>
+    <string name="download_started">Download started: %1$s</string>
+    <string name="load_failed">Books load nahi ho sake. Neeche khinch kar dobara koshish karein.</string>
+</resources>
