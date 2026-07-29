@@ -9,9 +9,7 @@ import java.net.URL
 
 object BooksRepository {
 
-    // TODO: apna GitHub raw books.json link yahan daalein, e.g.
-    // "https://raw.githubusercontent.com/USERNAME/REPO/main/books.json"
-    private const val REMOTE_BOOKS_URL = "https://raw.githubusercontent.com/YOUR_USERNAME/YOUR_REPO/main/books.json"
+    private const val REMOTE_BOOKS_URL = "https://raw.githubusercontent.com/Ahtsham25/app/main/books.json"
 
     fun loadBooks(context: Context): List<Book> {
         val json = fetchRemote() ?: fetchLocalAsset(context)
@@ -63,4 +61,3 @@ object BooksRepository {
         return list
     }
 }
-
