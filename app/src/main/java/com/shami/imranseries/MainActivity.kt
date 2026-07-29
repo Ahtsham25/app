@@ -1,13 +1,10 @@
 package com.shami.imranseries
 
-import android.app.DownloadManager
-import android.content.Context
+import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.os.Environment
 import android.widget.ProgressBar
 import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -21,7 +18,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var progressBar: ProgressBar
     private lateinit var swipeRefresh: SwipeRefreshLayout
     private lateinit var emptyText: TextView
-    private var allBooks: List<Book> = emptyList()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,7 +46,6 @@ class MainActivity : AppCompatActivity() {
             runOnUiThread {
                 progressBar.visibility = ProgressBar.GONE
                 swipeRefresh.isRefreshing = false
-                allBooks = books
                 if (books.isEmpty()) {
                     emptyText.visibility = TextView.VISIBLE
                     emptyText.text = getString(R.string.load_failed)
@@ -66,37 +61,20 @@ class MainActivity : AppCompatActivity() {
             .setTitle(book.title)
             .setItems(arrayOf(getString(R.string.read_online), getString(R.string.download))) { _, which ->
                 when (which) {
-                    0 -> openOnlineReader(book)
-                    1 -> downloadBook(book)
+                    0 -> openInBrowser(book.detailsUrl.ifEmpty { book.embedUrl })
+                    1 -> openInBrowser(book.downloadUrl)
                 }
             }
             .setNegativeButton(getString(R.string.cancel), null)
             .show()
     }
 
-    private fun openOnlineReader(book: Book) {
-        ReaderActivity.start(this, book.title, book.embedUrl)
-    }
-
-    private fun downloadBook(book: Book) {
-        val fileName = "${book.number} - ${book.title}.epub"
-        val request = DownloadManager.Request(Uri.parse(book.downloadUrl))
-            .setTitle(book.title)
-            .setDescription(getString(R.string.downloading))
-            .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
-            .setDestinationInExternalPublicDir(
-                Environment.DIRECTORY_DOWNLOADS,
-                "ImranSeries/$fileName"
-            )
-            .setAllowedOverMetered(true)
-            .setAllowedOverRoaming(true)
-
-        val dm = getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
-        dm.enqueue(request)
-        Toast.makeText(
-            this,
-            getString(R.string.download_started, fileName),
-            Toast.LENGTH_LONG
-        ).show()
+    private fun openInBrowser(url: String) {
+        try {
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+            startActivity(intent)
+        } catch (e: Exception) {
+            // agar koi masla ho to chup chaap ignore, app crash nahi hogi
+        }
     }
 }
