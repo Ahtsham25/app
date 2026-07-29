@@ -1,0 +1,8 @@
+<resources>
+    <style name="Theme.ImranSeries" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <item name="colorPrimary">#2E2115</item>
+        <item name="colorPrimaryDark">#1A130C</item>
+        <item name="colorAccent">#6B4226</item>
+        <item name="android:windowBackground">#F5F0E6</item>
+    </style>
+</resources>
