@@ -61,7 +61,7 @@ class MainActivity : AppCompatActivity() {
             .setTitle(book.title)
             .setItems(arrayOf(getString(R.string.read_online), getString(R.string.download))) { _, which ->
                 when (which) {
-                    0 -> ReaderActivity.start(this, book.title, book.readUrl)
+                    0 -> ReaderActivity.start(this, book.title, book.detailsUrl)
                     1 -> downloadPdf(book)
                 }
             }
