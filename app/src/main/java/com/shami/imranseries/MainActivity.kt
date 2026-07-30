@@ -1,15 +1,21 @@
 package com.shami.imranseries
 
-import android.content.Intent
+import android.app.DownloadManager
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
 import android.net.Uri
 import android.os.Bundle
+import android.os.Environment
 import android.widget.ProgressBar
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import java.io.File
 import kotlin.concurrent.thread
 
 class MainActivity : AppCompatActivity() {
@@ -23,6 +29,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        checkPreviousCrash()
+
         recyclerView = findViewById(R.id.recycler_books)
         progressBar = findViewById(R.id.progress_bar)
         swipeRefresh = findViewById(R.id.swipe_refresh)
@@ -32,6 +40,24 @@ class MainActivity : AppCompatActivity() {
 
         swipeRefresh.setOnRefreshListener { loadBooks() }
         loadBooks()
+    }
+
+    private fun checkPreviousCrash() {
+        val file = File(filesDir, "crash.txt")
+        if (file.exists()) {
+            val content = file.readText()
+            AlertDialog.Builder(this)
+                .setTitle("Pichli crash ka error")
+                .setMessage(content)
+                .setPositiveButton("Copy") { _, _ ->
+                    val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                    clipboard.setPrimaryClip(ClipData.newPlainText("crash", content))
+                    Toast.makeText(this, "Copy ho gaya", Toast.LENGTH_SHORT).show()
+                    file.delete()
+                }
+                .setNegativeButton("Band karein") { _, _ -> file.delete() }
+                .show()
+        }
     }
 
     private fun loadBooks() {
@@ -71,10 +97,23 @@ class MainActivity : AppCompatActivity() {
 
     private fun downloadPdf(book: Book) {
         try {
-            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(book.downloadUrl))
-            startActivity(intent)
+            val fileName = "${book.number} - ${book.title}.pdf"
+            val request = DownloadManager.Request(Uri.parse(book.downloadUrl))
+                .setTitle(book.title)
+                .setDescription(getString(R.string.downloading))
+                .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
+                .setDestinationInExternalPublicDir(
+                    Environment.DIRECTORY_DOWNLOADS,
+                    "ImranSeries/$fileName"
+                )
+                .setAllowedOverMetered(true)
+                .setAllowedOverRoaming(true)
+
+            val dm = getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
+            dm.enqueue(request)
+            Toast.makeText(this, getString(R.string.download_started, fileName), Toast.LENGTH_LONG).show()
         } catch (e: Exception) {
-            // ignore
+            Toast.makeText(this, "Download shuru nahi ho saka", Toast.LENGTH_SHORT).show()
         }
     }
 }
