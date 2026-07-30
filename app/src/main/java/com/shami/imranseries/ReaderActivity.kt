@@ -3,6 +3,8 @@ package com.shami.imranseries
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.os.Message
+import android.view.ViewGroup
 import android.webkit.WebChromeClient
 import android.webkit.WebSettings
 import android.webkit.WebView
@@ -48,14 +50,38 @@ class ReaderActivity : AppCompatActivity() {
         webView.settings.loadWithOverviewMode = true
         webView.settings.useWideViewPort = true
         webView.settings.cacheMode = WebSettings.LOAD_DEFAULT
+        webView.settings.setSupportMultipleWindows(false)
+        webView.layoutParams = ViewGroup.LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.MATCH_PARENT
+        )
 
         webView.webViewClient = object : WebViewClient() {
             override fun onPageFinished(view: WebView?, url: String?) {
                 super.onPageFinished(view, url)
                 progressBar.visibility = ProgressBar.GONE
             }
+
+            // Har link isi WebView ke andar hi khule, kabhi bhi bahar Chrome na jaye
+            override fun shouldOverrideUrlLoading(view: WebView?, url: String?): Boolean {
+                if (url != null) {
+                    view?.loadUrl(url)
+                }
+                return true
+            }
         }
-        webView.webChromeClient = WebChromeClient()
+
+        // Agar page popup/new-window kholne ki koshish kare, usay bhi isi WebView mein load karo
+        webView.webChromeClient = object : WebChromeClient() {
+            override fun onCreateWindow(
+                view: WebView?,
+                isDialog: Boolean,
+                isUserGesture: Boolean,
+                resultMsg: Message?
+            ): Boolean {
+                return false
+            }
+        }
 
         if (url.isNotEmpty()) {
             webView.loadUrl(url)
